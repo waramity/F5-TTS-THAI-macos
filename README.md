@@ -19,6 +19,9 @@ Text-to-Speech (TTS) ภาษาไทย — เครื่องมือส
  - การอ่านข้อความยาวๆ หรือบางคำ ยังไม่ถูกต้อง
 
 # การติดตั้ง
+ก่อนเริ่มใช้งาน ต้องติดตั้ง:
+ - Python (แนะนำเวอร์ชัน 3.10 ขึ้นไป)
+ - [CUDA](https://developer.nvidia.com/cuda-downloads) แนะนำ CUDA version 11.8
 ```sh
 git clone https://github.com/VYNCX/F5-TTS-THAI.git
 cd F5-TTS-THAI
@@ -41,8 +44,11 @@ pip install torch==2.3.0+cu118 torchaudio==2.3.0+cu118 --extra-index-url https:/
 ```sh
   f5-tts_webui
 ```
+- Text To Speech
+![Example_Gradio#3](https://github.com/user-attachments/assets/9fd6bf42-3c34-41aa-8f88-3f7ea191e4f0)
 
-![Image_Example](https://github.com/user-attachments/assets/3fe45ed0-9c4b-46de-8d72-d93933f74d2f)
+- Multi Speech
+![Example_Gradio#4](https://github.com/user-attachments/assets/fc57b2d0-bef9-4454-94c3-b72ca2551265)
 
 ใช้งานบน [Google Colab](https://colab.research.google.com/drive/10yb4-mGbSoyyfMyDX1xVF6uLqfeoCNxV?usp=sharing)
 
