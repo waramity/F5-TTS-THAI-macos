@@ -407,7 +407,7 @@ def create_gradio_interface():
                     ms_cleaned_text = process_thai_repeat(replace_numbers_with_thai(text))
                     # Generate speech for this segment
                     audio_out, _, ref_text_out = infer(
-                        ref_audio, ref_text, ms_cleaned_text, f5tts_model, remove_silence, cross_fade_duration=cross_fade_duration, nfe_step=nfe_step, show_info=print
+                        ref_audio, ref_text, ms_cleaned_text, f5tts_model, vocoder, remove_silence, cross_fade_duration=cross_fade_duration, nfe_step=nfe_step, show_info=print
                     )  # show_info=print no pull to top when generating
                     sr, audio_data = audio_out
 
