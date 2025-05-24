@@ -53,18 +53,12 @@ DEFAULT_TTS_MODEL_CFG = [
 
 # load models
 
-vocoder = load_vocoder()
+#vocoder = load_vocoder()
 
 
-def load_f5tts(ckpt_path=str(cached_path("hf://SWivid/F5-TTS/F5TTS_Base/model_1200000.safetensors"))):
-    F5TTS_model_cfg = dict(dim=1024, depth=22, heads=16, ff_mult=2, text_dim=512, conv_layers=4)
-    return load_model(DiT, F5TTS_model_cfg, ckpt_path)
-
-
-def load_e2tts(ckpt_path=str(cached_path("hf://SWivid/E2-TTS/E2TTS_Base/model_1200000.safetensors"))):
-    E2TTS_model_cfg = dict(dim=1024, depth=24, heads=16, ff_mult=4)
-    return load_model(UNetT, E2TTS_model_cfg, ckpt_path)
-
+#def load_f5tts(ckpt_path=str(cached_path("model_650000_bf16.pt"))):
+#    F5TTS_model_cfg = dict(dim=1024, depth=22, heads=16, ff_mult=2, text_dim=512, conv_layers=4)
+#    return load_model(DiT, F5TTS_model_cfg, ckpt_path,vocab_file="vocab/vocab.txt")
 
 def load_custom(ckpt_path: str, vocab_path="", model_cfg=None):
     ckpt_path, vocab_path = ckpt_path.strip(), vocab_path.strip()
@@ -77,8 +71,8 @@ def load_custom(ckpt_path: str, vocab_path="", model_cfg=None):
     return load_model(DiT, model_cfg, ckpt_path, vocab_file=vocab_path)
 
 
-F5TTS_ema_model = load_f5tts()
-E2TTS_ema_model = load_e2tts() if USING_SPACES else None
+#F5TTS_ema_model = load_f5tts()
+#E2TTS_ema_model = load_e2tts() if USING_SPACES else None
 custom_ema_model, pre_custom_path = None, ""
 
 chat_model_state = None
@@ -114,11 +108,12 @@ def infer(
     ref_text,
     gen_text,
     model,
+    vocoder,
     remove_silence,
     cross_fade_duration=0.15,
     nfe_step=32,
     speed=1,
-    show_info=gr.Info,
+    show_info=gr.Info
 ):
     if not ref_audio_orig:
         gr.Warning("Please provide reference audio.")
@@ -127,25 +122,11 @@ def infer(
     if not gen_text.strip():
         gr.Warning("Please enter text to generate.")
         return gr.update(), gr.update(), ref_text
-
+    
+    cross_fade_duration = float(cross_fade_duration)
     ref_audio, ref_text = preprocess_ref_audio_text(ref_audio_orig, ref_text, show_info=show_info)
-
-    if model == "F5-TTS":
-        ema_model = F5TTS_ema_model
-    elif model == "E2-TTS":
-        global E2TTS_ema_model
-        if E2TTS_ema_model is None:
-            show_info("Loading E2-TTS model...")
-            E2TTS_ema_model = load_e2tts()
-        ema_model = E2TTS_ema_model
-    elif isinstance(model, list) and model[0] == "Custom":
-        assert not USING_SPACES, "Only official checkpoints allowed in Spaces."
-        global custom_ema_model, pre_custom_path
-        if pre_custom_path != model[1]:
-            show_info("Loading Custom TTS model...")
-            custom_ema_model = load_custom(model[1], vocab_path=model[2], model_cfg=model[3])
-            pre_custom_path = model[1]
-        ema_model = custom_ema_model
+    
+    ema_model = model
 
     final_wave, final_sample_rate, combined_spectrogram = infer_process(
         ref_audio,
