@@ -388,7 +388,8 @@ def infer_process(
     speed=speed,
     fix_duration=fix_duration,
     device=device,
-    set_max_chars=250
+    set_max_chars=250,
+    no_ref_audio=False
 ):
     # Split the input text into batches
     audio, sr = torchaudio.load(ref_audio)
@@ -416,6 +417,7 @@ def infer_process(
             speed=speed,
             fix_duration=fix_duration,
             device=device,
+            no_ref_audio=no_ref_audio
         )
     )
 
@@ -441,6 +443,7 @@ def infer_batch_process(
     device=None,
     streaming=False,
     chunk_size=2048,
+    no_ref_audio=False
 ):
     audio, sr = ref_audio
     if audio.shape[0] > 1:
@@ -462,7 +465,7 @@ def infer_batch_process(
 
     def process_batch(gen_text):
         local_speed = speed
-        if len(gen_text.encode("utf-8")) < 10:
+        if len(gen_text) < 10:
             local_speed = 0.3
 
         # Prepare the text
@@ -474,19 +477,24 @@ def infer_batch_process(
             duration = int(fix_duration * target_sample_rate / hop_length)
         else:
             # Calculate duration
-            ref_text_len = len(ref_text.encode("utf-8"))
-            gen_text_len = len(gen_text.encode("utf-8"))
+            # For Thai support, count the number of characters (not bytes)
+            ref_text_len = len(ref_text)
+            gen_text_len = len(gen_text)
             duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
-
+            if no_ref_audio:
+                duration = int(gen_text_len / 5) * (target_sample_rate // hop_length)
+        
+        cond = torch.zeros((1, target_sample_rate * 1), device=device)
         # inference
         with torch.inference_mode():
             generated, _ = model_obj.sample(
-                cond=audio,
+                cond=cond if no_ref_audio else audio,
                 text=final_text_list,
                 duration=duration,
                 steps=nfe_step,
                 cfg_strength=cfg_strength,
                 sway_sampling_coef=sway_sampling_coef,
+                no_ref_audio=no_ref_audio
             )
 
             generated = generated.to(torch.float32)
