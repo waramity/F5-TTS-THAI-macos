@@ -73,7 +73,8 @@ def infer_tts(
     speed=1,
     cfg_strength=2,
     max_chars=250,
-    seed=-1
+    seed=-1,
+    no_ref_audio=False
 ):
     global f5tts_model
     if f5tts_model is None:
@@ -110,7 +111,8 @@ def infer_tts(
         cfg_strength=cfg_strength,
         target_rms=0.1,
         sway_sampling_coef=-1,
-        set_max_chars=max_chars
+        set_max_chars=max_chars,
+        no_ref_audio=no_ref_audio
     )
 
     if remove_silence:
@@ -147,7 +149,6 @@ def create_gradio_interface():
                 choices=model_choices,
                 value="Default",
                 interactive=True,
-                info="ถ้าใช้ FP16 จะใช้ทรัพยากรเครื่องหรือ VRAM น้อยกว่า"
             )
             model_custom = gr.Textbox(label="ตำแหน่งโมเดลแบบกำหนดเอง",value="hf://VIZINTZOR/F5-TTS-THAI/model_500000.pt", visible=False, interactive=True)
             model_status = gr.Textbox(label="สถานะโมเดล", value="")
@@ -170,7 +171,7 @@ def create_gradio_interface():
                         max_chars = gr.Number(label="ตัวอักษรสูงสุดต่อส่วน", minimum=50, maximum=1000, value=250,
                                             info="จำนวนตัวอักษรสูงสุดที่ใช้ในการแบ่งส่วน สำหรับข้อความยาวๆ")
                         seed = gr.Number(label="Seed", value=-1, precision=0, info="-1 = สุ่ม Seed")
-                        
+                        no_ref_audio = gr.Checkbox(label="เสียงดั้งเดิม", value=False,info="ใช้เสียงที่ไม่ผ่านการโคลนเสียงจากโมเดล")
                 with gr.Column():
                     output_audio = gr.Audio(label="เสียงที่สร้าง", type="filepath")
                     seed_output = gr.Textbox(label="Seed", interactive=False)
@@ -226,7 +227,8 @@ def create_gradio_interface():
                     speed,
                     cfg_strength,
                     max_chars,
-                    seed
+                    seed,
+                    no_ref_audio
                 ],
                 outputs=[
                     output_audio,
