@@ -483,7 +483,8 @@ def infer_batch_process(
             duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
             if no_ref_audio:
                 duration = int(gen_text_len / 5) * (target_sample_rate // hop_length)
-        
+                final_text_list = convert_char_to_pinyin([gen_text])
+                
         cond = torch.zeros((1, target_sample_rate * 1), device=device)
         # inference
         with torch.inference_mode():
