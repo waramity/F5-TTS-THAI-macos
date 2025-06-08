@@ -477,10 +477,10 @@ def infer_batch_process(
             duration = int(fix_duration * target_sample_rate / hop_length)
         else:
             # Calculate duration
-            # For Thai support, count the number of characters (not bytes)
             ref_text_len = len(ref_text)
             gen_text_len = len(gen_text)
-            duration = ref_audio_len + int(ref_audio_len / max(len(list(ref_text.strip('[]'))), 1) * max(len(list(gen_text.strip('[]'))), 1) / local_speed * 1.2)
+            duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
+            
             if no_ref_audio:
                 duration = int(gen_text_len / 5) * (target_sample_rate // hop_length)
                 final_text_list = convert_char_to_pinyin([gen_text])
