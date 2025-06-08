@@ -29,8 +29,8 @@ from f5_tts.utils.whisper_api import translate_inference,transribe_inference
 from f5_tts.infer.infer_gradio import *
 
 #ถ้าอยากใช้โมเดลที่อัพเดทใหม หรือโมเดลภาษาอื่น สามารถแก้ไขโค้ด Model และ Vocab เช่น default_model_base = "hf://VIZINTZOR/F5-TTS-THAI/model_350000.pt"
-default_model_base = "hf://VIZINTZOR/F5-TTS-THAI/model_650000.pt"
-fp16_model_base = "hf://VIZINTZOR/F5-TTS-THAI/model_650000_FP16.pt"
+default_model_base = "hf://VIZINTZOR/F5-TTS-THAI/model_850000.pt"
+fp16_model_base = "hf://VIZINTZOR/F5-TTS-THAI/model_850000_FP16.pt"
 vocab_base = "./vocab/vocab.txt"
 
 model_choices = ["Default", "FP16", "Custom"]
@@ -150,7 +150,7 @@ def create_gradio_interface():
                 value="Default",
                 interactive=True,
             )
-            model_custom = gr.Textbox(label="ตำแหน่งโมเดลแบบกำหนดเอง",value="hf://VIZINTZOR/F5-TTS-THAI/model_500000.pt", visible=False, interactive=True)
+            model_custom = gr.Textbox(label="ตำแหน่งโมเดลแบบกำหนดเอง",value="hf://VIZINTZOR/F5-TTS-THAI/model_650000.pt", visible=False, interactive=True)
             model_status = gr.Textbox(label="สถานะโมเดล", value="")
             load_custom_btn = gr.Button("โหลด",variant="primary")
     
@@ -166,7 +166,7 @@ def create_gradio_interface():
                         remove_silence = gr.Checkbox(label="Remove Silence", value=True)
                         speed = gr.Slider(label="ความเร็ว", value=1, minimum=0.3, maximum=2, step=0.1)
                         cross_fade_duration = gr.Slider(label="Cross Fade Duration", value="0.15", minimum=0, maximum=1, step=0.05)
-                        nfe_step = gr.Slider(label="NFE Step", value=32, minimum=16, maximum=64, step=8, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่อาจจะช้าลง")
+                        nfe_step = gr.Slider(label="NFE Step", value=32, minimum=7, maximum=64, step=8, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่อาจจะช้าลง")
                         cfg_strength = gr.Slider(label="CFG Strength", value=2, minimum=1, maximum=4, step=0.5)
                         max_chars = gr.Number(label="ตัวอักษรสูงสุดต่อส่วน", minimum=50, maximum=1000, value=250,
                                             info="จำนวนตัวอักษรสูงสุดที่ใช้ในการแบ่งส่วน สำหรับข้อความยาวๆ")
@@ -207,13 +207,14 @@ def create_gradio_interface():
             
             gr.Markdown("# คำแนะนำ")
             gr.Markdown(
-                        """ - สามารถตั้งค่า "ตัวอักษรสูงสุดต่อส่วน" หรือ max_chars เพื่อลดความผิดพลาดการอ่าน แต่ความเร็วในการสร้างจะช้าลง สามารถปรับลด NFE Step เพื่อเพิ่มความเร็วได้.
+                        """ - สามารถตั้งค่า "ตัวอักษรสูงสุดต่อส่วน" หรือ max_chars เพื่อลดความผิดพลาดการอ่าน แต่ความเร็วในการสร้างจะช้าลง สามารถปรับลด NFE Step เพื่อเพิ่มความเร็วได้
+                        ปรับ NFE Step เหลือ 7 สามารถเพิ่มความเร็วการในการสร้างได้มาก แต่เสียงที่ได้พอฟังได้.
                         - อย่าลืมเว้นวรรคประโยคเพื่อให้สามารถแบ่งส่วนในการสร้างได้.
                         - สำหรับ ref_text หรือ ข้อความตันฉบับ แนะนำให้ใช้เป็นภาษาไทยหรือคำอ่านภาษาไทยสำหรับเสียงภาษาอื่น เพื่อให้การอ่านภาษาไทยดีขึ้น เช่น Good Morning > กู้ดมอร์นิ่ง.
                         - สำหรับเสียงต้นแบบ ควรใช้ความยาวไม่เกิน 10 วินาที ถ้าเป็นไปได้ห้ามมีเสียงรบกวน.
                         - สามารถปรับลดความเร็วให้ช้าลง ถ้าเสียงต้นฉบับมีความยาวไม่มาก เช่น 2-5 วินาที
-                        - การอ่านข้อความยาวๆ หรือบางคำ ยังไม่ถูกต้อง.
-                        - โมเดลตอนนี้ยังเน้นการอ่านภาษาไทยเป็นหลัก การอ่านภาษาไทยผสมกับภาษาอังกฤษยังค้องปรับปรุง.
+                        - การอ่านข้อความยาวๆ หรือบางคำ ยังไม่ถูกต้อง สามารถปรับลดความเร็วเพื่อให้การอ่านถูกต้องได้ เช่น ถ้าเสียงต้นฉบับมีความยาว 1-3 วินาที อาจจะต้องประความเร็วเหลือ 0.8-0.9.
+                        - โมเดลตอนนี้ยังเน้นการอ่านภาษาไทยเป็นหลัก การอ่านภาษาไทยผสมกับภาษาอังกฤษยังต้องปรับปรุง.
                     """
             )
 
