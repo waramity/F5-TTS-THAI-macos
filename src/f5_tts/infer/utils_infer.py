@@ -477,8 +477,8 @@ def infer_batch_process(
             duration = int(fix_duration * target_sample_rate / hop_length)
         else:
             # Calculate duration
-            ref_text_len = len(ref_text.encode("utf-8"))
-            gen_text_len = len(gen_text.encode("utf-8"))
+            ref_text_len = len(ref_text)
+            gen_text_len = len(gen_text)
             duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
             
             if no_ref_audio:
