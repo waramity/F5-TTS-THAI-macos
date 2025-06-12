@@ -9,13 +9,8 @@
 Text-to-Speech (TTS) ภาษาไทย — เครื่องมือสร้างเสียงพูดจากข้อความด้วยเทคนิค Flow Matching ด้วยโมเดล F5-TTS
 
 โมเดล Finetune : [VIZINTZOR/F5-TTS-THAI](https://huggingface.co/VIZINTZOR/F5-TTS-THAI)
- - ชุดข้อมุลในการเทรน : 
-   - [Porameht/processed-voice-th-169k](https://huggingface.co/datasets/Porameht/processed-voice-th-169k)
-   - [Common Voice](https://commonvoice.mozilla.org/)
- - จำนวน 200,000 เสียง
-   - ภาษาไทย ประมาณ 190 ชั่วโมง
-   - ภาษาอังกฤษ ประมาณ 40 ชั่วโมง
- - โมเดล last steps : 850,000
+
+ - โมเดล last steps : 900,000
  - การอ่านข้อความยาวๆ หรือบางคำ ยังไม่ถูกต้อง
 
 # การติดตั้ง
@@ -44,12 +39,6 @@ pip install torch==2.3.0+cu118 torchaudio==2.3.0+cu118 --extra-index-url https:/
 ```sh
   f5-tts_webui
 ```
-- Text To Speech
-![Example_Gradio#3](https://github.com/user-attachments/assets/9fd6bf42-3c34-41aa-8f88-3f7ea191e4f0)
-
-- Multi Speech
-![Example_Gradio#4](https://github.com/user-attachments/assets/fc57b2d0-bef9-4454-94c3-b72ca2551265)
-
 ใช้งานบน [Google Colab](https://colab.research.google.com/drive/10yb4-mGbSoyyfMyDX1xVF6uLqfeoCNxV?usp=sharing)
 
 คำแนะนำ :
@@ -58,6 +47,15 @@ pip install torch==2.3.0+cu118 torchaudio==2.3.0+cu118 --extra-index-url https:/
 - สำหรับ ref_text หรือ ข้อความตันฉบับ แนะนำให้ใช้เป็นภาษาไทยหรือคำอ่านภาษาไทยสำหรับเสียงภาษาอื่น เพื่อให้การอ่านภาษาไทยดีขึ้น เช่น Good Morning > กู้ดมอร์นิ่ง.
 - สำหรับเสียงต้นแบบ ควรใช้ความยาวไม่เกิน 10 วินาที ถ้าเป็นไปได้ห้ามมีเสียงรบกวน.
 - สามารถปรับลดความเร็ว เพื่อให้การอ่านคำดีขึ้นได้ เช่น ความเร็ว 0.8-0.9 เพื่อลดการอ่านผิดหรือคำขาดหาย แต่ลดมากไปอาจมีเสียงต้นฉบับแทรกเข้ามา.
+  
+  <details><summary>ตัวอย่าง WebUI</summary>
+  
+   - Text To Speech
+   ![Example_Gradio#3](https://github.com/user-attachments/assets/9fd6bf42-3c34-41aa-8f88-3f7ea191e4f0)
+  
+   - Multi Speech
+   ![Example_Gradio#4](https://github.com/user-attachments/assets/fc57b2d0-bef9-4454-94c3-b72ca2551265)
+ 
   
 # ฝึกอบรม และ Finetune
 ใช้งานบน Google Colab [Finetune](https://colab.research.google.com/drive/1jwzw4Jn1qF8-F0o3TND68hLHdIqqgYEe?usp=sharing) หรือ 
