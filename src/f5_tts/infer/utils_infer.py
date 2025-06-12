@@ -421,7 +421,31 @@ def infer_process(
         )
     )
 
+#estimated duration
+FRAMES_PER_SEC = target_sample_rate / hop_length
 
+def estimated_duration(ref_audio_len, ref_text: str, gen_text: str, speed: float = 1.0) -> float:
+    if not ref_text or not gen_text:
+        raise ValueError("Reference text and generated text must not be empty.")
+    if speed <= 0:
+        raise ValueError("Speed must be a positive value.")
+    # Thai punctuation that may cause pauses
+    thai_pause_punc = r"[.,;?!ฯ]"
+    ref_punc_count = len(re.findall(thai_pause_punc, ref_text))
+    gen_punc_count = len(re.findall(thai_pause_punc, gen_text))
+
+    # Use character count for Thai text length (syllables are approximated by characters)
+    ref_text_len = len(ref_text) + 2 * ref_punc_count  # Add 2 frames per pause
+    gen_text_len = len(gen_text) + 2 * gen_punc_count
+
+    # Estimate duration in frames based on text length ratio and speed
+    duration_in_frames = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / speed)
+
+    # Convert frames to seconds
+    estimated_duration = duration_in_frames / FRAMES_PER_SEC
+    print(f"Estimated duration for Thai text: {estimated_duration:.2f} seconds")
+    return estimated_duration
+    
 # infer batches
 
 
@@ -469,7 +493,7 @@ def infer_batch_process(
             local_speed = 0.3
 
         # Prepare the text
-        text_list = [ref_text + gen_text]
+        text_list = [ref_text + " " + gen_text]
         final_text_list = convert_char_to_pinyin(text_list)
 
         ref_audio_len = audio.shape[-1] // hop_length
@@ -479,7 +503,8 @@ def infer_batch_process(
             # Calculate duration
             ref_text_len = len(ref_text)
             gen_text_len = len(gen_text)
-            duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
+            #duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
+            duration = int(estimated_duration(ref_audio_len,ref_text,gen_text,speed=local_speed) * FRAMES_PER_SEC)
             
             if no_ref_audio:
                 duration = int(gen_text_len / 5) * (target_sample_rate // hop_length)
