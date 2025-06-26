@@ -503,11 +503,11 @@ def infer_batch_process(
             # Calculate duration
             ref_text_len = len(ref_text)
             gen_text_len = len(gen_text)
-            #duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
-            duration = int(estimated_duration(ref_audio_len,ref_text,gen_text,speed=local_speed) * FRAMES_PER_SEC)
+            duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
+            #duration = int(estimated_duration(ref_audio_len,ref_text,gen_text,speed=local_speed) * FRAMES_PER_SEC)
             
             if no_ref_audio:
-                duration = int(gen_text_len / 5) * (target_sample_rate // hop_length)
+                duration = int(gen_text_len / 4) * (target_sample_rate // hop_length)
                 final_text_list = convert_char_to_pinyin([gen_text])
                 
         cond = torch.zeros((1, target_sample_rate * 1), device=device)
