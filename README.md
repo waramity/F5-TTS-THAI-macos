@@ -10,7 +10,7 @@ Text-to-Speech (TTS) ภาษาไทย — เครื่องมือส
 
 โมเดล Finetune : [VIZINTZOR/F5-TTS-THAI](https://huggingface.co/VIZINTZOR/F5-TTS-THAI)
 
- - โมเดล last steps : 900,000
+ - โมเดล last steps : 1,000,000
  - การอ่านข้อความยาวๆ หรือบางคำ ยังไม่ถูกต้อง
 
 # การติดตั้ง
