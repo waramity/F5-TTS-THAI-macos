@@ -25,6 +25,8 @@ from huggingface_hub import snapshot_download, hf_hub_download
 from pydub import AudioSegment, silence
 from transformers import pipeline
 from vocos import Vocos
+import syllapy 
+from ssg import syllable_tokenize
 
 from f5_tts.model import CFM
 from f5_tts.model.utils import (
@@ -421,33 +423,25 @@ def infer_process(
         )
     )
 
-#estimated duration
-FRAMES_PER_SEC = target_sample_rate / hop_length
+#estimated duration with syllable
+FRAMES_PER_WORDS = 25
 
-def estimated_duration(ref_audio_len, ref_text: str, gen_text: str, speed: float = 1.0) -> float:
-    if not ref_text or not gen_text:
-        raise ValueError("Reference text and generated text must not be empty.")
-    if speed <= 0:
-        raise ValueError("Speed must be a positive value.")
-    # Thai punctuation that may cause pauses
-    thai_pause_punc = r"[.,;?!ฯ]"
-    ref_punc_count = len(re.findall(thai_pause_punc, ref_text))
-    gen_punc_count = len(re.findall(thai_pause_punc, gen_text))
-
-    # Use character count for Thai text length (syllables are approximated by characters)
-    ref_text_len = len(ref_text) + 2 * ref_punc_count  # Add 2 frames per pause
-    gen_text_len = len(gen_text) + 2 * gen_punc_count
-
-    # Estimate duration in frames based on text length ratio and speed
-    duration_in_frames = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / speed)
-
-    # Convert frames to seconds
-    estimated_duration = duration_in_frames / FRAMES_PER_SEC
-    print(f"Estimated duration for Thai text: {estimated_duration:.2f} seconds")
-    return estimated_duration
+def words_to_frame(text, frame_per_words=FRAMES_PER_WORDS):
+    thai_pattern = r'[\u0E00-\u0E7F\s]+'
+    english_pattern = r'[a-zA-Z\s]+'
     
-# infer batches
+    thai_segs = re.findall(thai_pattern, text)
+    eng_segs = re.findall(english_pattern, text)
+    
+    syl_th = sum(len(syllable_tokenize(seg.strip())) for seg in thai_segs if seg.strip())
+    syl_en = sum(syllapy._syllables(seg.strip()) for seg in eng_segs if seg.strip())
+    syl_unk = text.count(',')  # Count spaces as 1 syllable each
+    
+    duration = (syl_th + syl_en + syl_unk) * frame_per_words
+    print(f"Thai: {syl_th}, Eng: {syl_en}, Spaces: {syl_unk}, Total: {duration} frames")
+    return duration
 
+# infer batches
 
 def infer_batch_process(
     ref_audio,
@@ -503,8 +497,9 @@ def infer_batch_process(
             # Calculate duration
             ref_text_len = len(ref_text)
             gen_text_len = len(gen_text)
-            duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
-            #duration = int(estimated_duration(ref_audio_len,ref_text,gen_text,speed=local_speed) * FRAMES_PER_SEC)
+            speech_rate = int(FRAMES_PER_WORDS / local_speed)
+            duration = ref_audio_len + words_to_frame(text=gen_text,frame_per_words=speech_rate)
+            #duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
             
             if no_ref_audio:
                 duration = int(gen_text_len / 4) * (target_sample_rate // hop_length)
