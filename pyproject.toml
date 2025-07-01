@@ -44,7 +44,9 @@ dependencies = [
     "pythainlp",
     "python-crfsuite",
     "faster_whisper>=0.10.1",
-    "deep-translator"
+    "deep-translator",
+    "ssg",
+    "syllapy"
 ]
 
 [project.optional-dependencies]
