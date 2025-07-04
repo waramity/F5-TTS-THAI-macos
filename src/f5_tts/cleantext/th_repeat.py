@@ -4,6 +4,7 @@ def remove_symbol(text):
     symbols = "{}[]()-_?/\\|!*%$&@#^<>+-\";:~\`=“”"
     for symbol in symbols:
         text = text.replace(symbol, '')
+    text = text.replace(" ๆ","ๆ")
     return text
     
 def process_thai_repeat(text):
