@@ -424,7 +424,7 @@ def infer_process(
     )
 
 #estimated duration with syllable
-FRAMES_PER_WORDS = 25
+FRAMES_PER_WORDS = target_sample_rate / hop_length
 
 def words_to_frame(text, frame_per_words=FRAMES_PER_WORDS):
     thai_pattern = r'[\u0E00-\u0E7F\s]+'
