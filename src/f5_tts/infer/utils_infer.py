@@ -424,9 +424,9 @@ def infer_process(
     )
 
 #estimated duration with syllable
-FRAMES_PER_WORDS = target_sample_rate / hop_length
+FRAMES_PER_SEC = target_sample_rate / hop_length
 
-def words_to_frame(text, frame_per_words=FRAMES_PER_WORDS):
+def words_to_frame(text, frame_per_words=int):
     thai_pattern = r'[\u0E00-\u0E7F\s]+'
     english_pattern = r'[a-zA-Z\s]+'
     
@@ -497,6 +497,7 @@ def infer_batch_process(
             # Calculate duration
             ref_text_len = len(ref_text)
             gen_text_len = len(gen_text)
+            FRAMES_PER_WORDS = FRAMES_PER_SEC / 4
             speech_rate = int(FRAMES_PER_WORDS / local_speed)
             duration = ref_audio_len + words_to_frame(text=gen_text,frame_per_words=speech_rate)
             #duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
