@@ -5,11 +5,10 @@ import random
 from collections import defaultdict
 from importlib.resources import files
 
-import torch
-from torch.nn.utils.rnn import pad_sequence
-
 import jieba
-from pypinyin import lazy_pinyin, Style
+import torch
+from pypinyin import Style, lazy_pinyin
+from torch.nn.utils.rnn import pad_sequence
 
 
 # seed everything
@@ -34,6 +33,16 @@ def exists(v):
 
 def default(v, d):
     return v if exists(v) else d
+
+
+def is_package_available(package_name: str) -> bool:
+    try:
+        import importlib
+
+        package_exists = importlib.util.find_spec(package_name) is not None
+        return package_exists
+    except Exception:
+        return False
 
 
 # tensor helpers
@@ -133,11 +142,12 @@ def get_tokenizer(dataset_name, tokenizer: str = "pinyin"):
 
 # convert char to pinyin
 
-jieba.initialize()
-print("Word segmentation module jieba initialized.\n")
-
 
 def convert_char_to_pinyin(text_list, polyphone=True):
+    if jieba.dt.initialized is False:
+        jieba.default_logger.setLevel(50)  # CRITICAL
+        jieba.initialize()
+
     final_text_list = []
     custom_trans = str.maketrans(
         {";": ",", "“": '"', "”": '"', "‘": "'", "’": "'"}
@@ -189,8 +199,10 @@ def repetition_found(text, length=2, tolerance=10):
         if count > tolerance:
             return True
     return False
-    
+
+
 # get the empirically pruned step for sampling
+
 
 def get_epss_timesteps(n, device, dtype):
     dt = 1 / 32
