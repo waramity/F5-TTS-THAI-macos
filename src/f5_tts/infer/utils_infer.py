@@ -27,7 +27,7 @@ from transformers import pipeline
 from vocos import Vocos
 import syllapy 
 from ssg import syllable_tokenize
-
+from f5_tts.cleantext.TH2IPA import any_ipa
 from f5_tts.model import CFM
 from f5_tts.model.utils import (
     get_tokenizer,
@@ -391,7 +391,7 @@ def infer_process(
     fix_duration=fix_duration,
     device=device,
     set_max_chars=250,
-    no_ref_audio=False
+    use_ipa=False
 ):
     # Split the input text into batches
     audio, sr = torchaudio.load(ref_audio)
@@ -419,7 +419,7 @@ def infer_process(
             speed=speed,
             fix_duration=fix_duration,
             device=device,
-            no_ref_audio=no_ref_audio
+            use_ipa=use_ipa
         )
     )
 
@@ -461,7 +461,7 @@ def infer_batch_process(
     device=None,
     streaming=False,
     chunk_size=2048,
-    no_ref_audio=False
+    use_ipa=False
 ):
     audio, sr = ref_audio
     if audio.shape[0] > 1:
@@ -478,45 +478,47 @@ def infer_batch_process(
     generated_waves = []
     spectrograms = []
 
-    if len(ref_text[-1].encode("utf-8")) == 1:
+    if len(ref_text[-1]) == 1:
         ref_text = ref_text + " "
 
     def process_batch(gen_text):
         local_speed = speed
-        if len(gen_text) < 10:
+        if len(gen_text) < 15:
             local_speed = 0.3
 
         # Prepare the text
-        text_list = [ref_text + " " + gen_text]
-        final_text_list = convert_char_to_pinyin(text_list)
+        if use_ipa:
+            ref_text_ipa = any_ipa(ref_text)
+            gen_text_ipa = any_ipa(gen_text)
+            final_text_list = [ref_text_ipa + " " + gen_text_ipa]
+        else:
+            final_text_list = [ref_text + " " + gen_text]
 
         ref_audio_len = audio.shape[-1] // hop_length
         if fix_duration is not None:
             duration = int(fix_duration * target_sample_rate / hop_length)
         else:
             # Calculate duration
-            ref_text_len = len(ref_text)
-            gen_text_len = len(gen_text)
-            FRAMES_PER_WORDS = FRAMES_PER_SEC / 4
-            speech_rate = int(FRAMES_PER_WORDS / local_speed)
-            duration = ref_audio_len + words_to_frame(text=gen_text,frame_per_words=speech_rate)
-            #duration = ref_audio_len + int(ref_audio_len / ref_text_len * gen_text_len / local_speed)
+            if use_ipa:
+                FRAMES_PER_WORDS = FRAMES_PER_SEC / 4
+                speech_rate = int(FRAMES_PER_WORDS / local_speed)
+                duration = ref_audio_len + words_to_frame(text=gen_text,frame_per_words=speech_rate)
+            else:
+                FRAMES_PER_WORDS = FRAMES_PER_SEC / 4
+                speech_rate = int(FRAMES_PER_WORDS / local_speed)
+                duration = ref_audio_len + words_to_frame(text=gen_text,frame_per_words=speech_rate)
             
-            if no_ref_audio:
-                duration = int(gen_text_len / 4) * (target_sample_rate // hop_length)
-                final_text_list = convert_char_to_pinyin([gen_text])
-                
         cond = torch.zeros((1, target_sample_rate * 1), device=device)
         # inference
         with torch.inference_mode():
             generated, _ = model_obj.sample(
-                cond=cond if no_ref_audio else audio,
+                cond=audio,
                 text=final_text_list,
                 duration=duration,
                 steps=nfe_step,
                 cfg_strength=cfg_strength,
                 sway_sampling_coef=sway_sampling_coef,
-                no_ref_audio=no_ref_audio
+                lens=torch.tensor([ref_audio_len], device=device, dtype=torch.long)
             )
 
             generated = generated.to(torch.float32)
