@@ -438,7 +438,7 @@ def words_to_frame(text, frame_per_words=int):
     syl_unk = text.count(',')  # Count spaces as 1 syllable each
     
     duration = (syl_th + syl_en + syl_unk) * frame_per_words
-    print(f"Thai: {syl_th}, Eng: {syl_en}, Spaces: {syl_unk}, Total: {duration} frames")
+    #print(f"Thai: {syl_th}, Eng: {syl_en}, Spaces: {syl_unk}, Total: {duration} frames")
     return duration
 
 # infer batches
@@ -625,3 +625,4 @@ def save_spectrogram(spectrogram, path):
     plt.colorbar()
     plt.savefig(path)
     plt.close()
+
