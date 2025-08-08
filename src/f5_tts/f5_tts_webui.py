@@ -168,7 +168,7 @@ def create_gradio_interface():
                         lang_input = gr.Radio(label="Language",choices=["TH","TH-IPA","EN"],value="TH",info="การประมวลผลข้อความภาษา")
                         remove_silence = gr.Checkbox(label="Remove Silence", value=True)
                         speed = gr.Slider(label="ความเร็ว", value=1, minimum=0.3, maximum=1.5, step=0.1)
-                        cross_fade_duration = gr.Slider(label="Cross Fade Duration", value="0.15", minimum=0, maximum=1, step=0.05)
+                        cross_fade_duration = gr.Slider(label="Cross Fade Duration", value=0.15, minimum=0, maximum=1, step=0.05)
                         nfe_step = gr.Slider(label="NFE Step", value=32, minimum=7, maximum=64, step=1, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่อาจจะช้าลง")
                         cfg_strength = gr.Slider(label="CFG Strength", value=2, minimum=1, maximum=4, step=0.1)
                         max_chars = gr.Number(label="ตัวอักษรสูงสุดต่อส่วน", minimum=50, maximum=1000, value=250,
@@ -527,4 +527,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
