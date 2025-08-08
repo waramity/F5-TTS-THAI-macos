@@ -171,7 +171,7 @@ def create_gradio_interface():
                         cross_fade_duration = gr.Slider(label="Cross Fade Duration", value=0.15, minimum=0, maximum=1, step=0.05)
                         nfe_step = gr.Slider(label="NFE Step", value=32, minimum=7, maximum=64, step=1, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่อาจจะช้าลง")
                         cfg_strength = gr.Slider(label="CFG Strength", value=2, minimum=1, maximum=4, step=0.1)
-                        max_chars = gr.Number(label="ตัวอักษรสูงสุดต่อส่วน", minimum=50, maximum=1000, value=250,
+                        max_chars = gr.Number(label="ตัวอักษรสูงสุดต่อส่วน", minimum=50, maximum=1000, value=300,
                                             info="จำนวนตัวอักษรสูงสุดที่ใช้ในการแบ่งส่วน สำหรับข้อความยาวๆ")
                         seed = gr.Number(label="Seed", value=-1, precision=0, info="-1 = สุ่ม Seed")
                         
@@ -370,7 +370,7 @@ def create_gradio_interface():
                     label="Remove Silences",
                     value=True,
                 )
-                ms_cross_fade_duration = gr.Slider(label="Cross Fade Duration", value="0.15", minimum=0, maximum=1, step=0.05)
+                ms_cross_fade_duration = gr.Slider(label="Cross Fade Duration", value=0.15, minimum=0, maximum=1, step=0.05)
                 ms_nfe_step = gr.Slider(label="NFE Step", value=32, minimum=16, maximum=64, step=8, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่จะช้าลง")
 
 
@@ -527,5 +527,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
