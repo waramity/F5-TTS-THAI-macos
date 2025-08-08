@@ -8,7 +8,8 @@
 
 Text-to-Speech (TTS) ภาษาไทย — เครื่องมือสร้างเสียงพูดจากข้อความด้วยเทคนิค Flow Matching ด้วยโมเดล F5-TTS
 
-โมเดล Finetune : [VIZINTZOR/F5-TTS-THAI](https://huggingface.co/VIZINTZOR/F5-TTS-THAI)
+โมเดล Finetune : [VIZINTZOR/F5-TTS-THAI](https://huggingface.co/VIZINTZOR/F5-TTS-THAI) 
+
 โมเดล Finetune V2 (IPA) : [VIZINTZOR/F5-TTS-TH-V2](https://huggingface.co/VIZINTZOR/F5-TTS-TH-V2)
 
  - โมเดล last steps : 1,000,000
@@ -93,6 +94,7 @@ https://github.com/user-attachments/assets/06d6e94b-5f83-4d69-99d1-ad19caa9792b
 # อ้างอิง
 
 - [F5-TTS](https://github.com/SWivid/F5-TTS)
+
 
 
 
