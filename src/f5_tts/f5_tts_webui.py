@@ -100,7 +100,7 @@ def infer_tts(
     
     ref_audio, ref_text = preprocess_ref_audio_text(ref_audio_orig, ref_text)
     
-    gen_text_cleaned = process_thai_repeat(replace_numbers_with_thai(gen_text)) if lang == "TH" else gen_text
+    gen_text_cleaned = gen_text if lang == "EN" else process_thai_repeat(replace_numbers_with_thai(gen_text)) 
 
     final_wave, final_sample_rate, combined_spectrogram = infer_process(
         ref_audio,
@@ -527,3 +527,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
