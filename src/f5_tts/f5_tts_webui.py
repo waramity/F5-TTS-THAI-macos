@@ -372,7 +372,7 @@ def create_gradio_interface():
                 )
                 ms_use_ipa = gr.Checkbox(label="การประมวลผลข้อความภาษา(IPA)", value=False, info="ใช้ IPA สำหรับโมเดล V2 เท่านั้น")
                 ms_cross_fade_duration = gr.Slider(label="Cross Fade Duration", value=0.15, minimum=0, maximum=1, step=0.05)
-                ms_nfe_step = gr.Slider(label="NFE Step", value=32, minimum=16, maximum=64, step=8, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่จะช้าลง")
+                ms_nfe_step = gr.Slider(label="NFE Step", value=32, minimum=7, maximum=64, step=1, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่จะช้าลง")
 
 
             # Generate button
@@ -539,3 +539,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
