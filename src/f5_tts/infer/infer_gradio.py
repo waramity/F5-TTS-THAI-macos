@@ -113,7 +113,8 @@ def infer(
     cross_fade_duration=0.15,
     nfe_step=32,
     speed=1,
-    show_info=gr.Info
+    show_info=gr.Info,
+    use_ipa=False
 ):
     if not ref_audio_orig:
         gr.Warning("Please provide reference audio.")
@@ -139,6 +140,7 @@ def infer(
         speed=speed,
         show_info=show_info,
         progress=gr.Progress(),
+        use_ipa=use_ipa
     )
 
     # Remove silence
