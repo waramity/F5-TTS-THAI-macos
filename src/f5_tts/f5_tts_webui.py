@@ -79,7 +79,7 @@ def infer_tts(
     cfg_strength=2,
     max_chars=250,
     seed=-1,
-    lang="TH"
+    lang_process="Default"
 ):
     global f5tts_model
     if f5tts_model is None:
@@ -100,7 +100,7 @@ def infer_tts(
     
     ref_audio, ref_text = preprocess_ref_audio_text(ref_audio_orig, ref_text)
     
-    gen_text_cleaned = gen_text if lang == "EN" else process_thai_repeat(replace_numbers_with_thai(gen_text)) 
+    gen_text_cleaned = process_thai_repeat(replace_numbers_with_thai(gen_text)) 
 
     final_wave, final_sample_rate, combined_spectrogram = infer_process(
         ref_audio,
@@ -114,7 +114,7 @@ def infer_tts(
         progress=gr.Progress(),
         cfg_strength=cfg_strength,
         set_max_chars=max_chars,
-        use_ipa=True if lang == "TH-IPA" else False
+        use_ipa=True if lang_process == "IPA" else False
     )
 
     if remove_silence:
@@ -165,7 +165,7 @@ def create_gradio_interface():
                     generate_btn = gr.Button("สร้าง",variant="primary")
 
                     with gr.Accordion(label="ตั้งค่า"):
-                        lang_input = gr.Radio(label="Language",choices=["TH","TH-IPA","EN"],value="TH",info="การประมวลผลข้อความภาษา")
+                        lang_input = gr.Radio(label="การประมวลผลข้อความภาษา",choices=["Default","IPA"],value="Default",info="IPA สำหรับโมเดล V2 เท่านั้น")
                         remove_silence = gr.Checkbox(label="Remove Silence", value=True)
                         speed = gr.Slider(label="ความเร็ว", value=1, minimum=0.3, maximum=1.5, step=0.1)
                         cross_fade_duration = gr.Slider(label="Cross Fade Duration", value=0.15, minimum=0, maximum=1, step=0.05)
@@ -370,6 +370,7 @@ def create_gradio_interface():
                     label="Remove Silences",
                     value=True,
                 )
+                ms_use_ipa = gr.Checkbox(label="การประมวลผลข้อความภาษา(IPA)", value=False, info="ใช้ IPA สำหรับโมเดล V2 เท่านั้น")
                 ms_cross_fade_duration = gr.Slider(label="Cross Fade Duration", value=0.15, minimum=0, maximum=1, step=0.05)
                 ms_nfe_step = gr.Slider(label="NFE Step", value=32, minimum=16, maximum=64, step=8, info="ยิ่งค่ามากยิ่งมีคุณภาพสูง แต่จะช้าลง")
 
@@ -384,6 +385,7 @@ def create_gradio_interface():
                 gen_text,
                 cross_fade_duration,
                 nfe_step,
+                lang_process,
                 *args,
             ):
                 speech_type_names_list = args[:max_speech_types]
@@ -430,7 +432,16 @@ def create_gradio_interface():
                     ms_cleaned_text = process_thai_repeat(replace_numbers_with_thai(text))
                     # Generate speech for this segment
                     audio_out, _, ref_text_out = infer(
-                        ref_audio, ref_text, ms_cleaned_text, f5tts_model, vocoder, remove_silence, cross_fade_duration=cross_fade_duration, nfe_step=nfe_step, show_info=print
+                        ref_audio, 
+                        ref_text, 
+                        ms_cleaned_text, 
+                        f5tts_model, 
+                        vocoder, 
+                        remove_silence, 
+                        cross_fade_duration=cross_fade_duration, 
+                        nfe_step=nfe_step, 
+                        show_info=print,
+                        use_ipa=lang_process,
                     )  # show_info=print no pull to top when generating
                     sr, audio_data = audio_out
 
@@ -450,7 +461,8 @@ def create_gradio_interface():
                 inputs=[
                     gen_text_input_multistyle,
                     ms_cross_fade_duration,
-                    ms_nfe_step
+                    ms_nfe_step,
+                    ms_use_ipa    
                 ]
                 + speech_type_names
                 + speech_type_audios
@@ -527,6 +539,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
