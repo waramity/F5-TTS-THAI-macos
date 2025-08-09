@@ -53,6 +53,9 @@ f5tts_model = load_f5tts(str(cached_path(default_model_base)))
 def update_custom_model(selected_model):
     return gr.update(visible=selected_model == "Custom")
     
+def update_v2_ipa(model):
+    return gr.update(value="IPA" if model == "V2" else "Default")
+    
 def load_custom_model(model_choice,model_custom_path):
     torch.cuda.empty_cache()
     global f5tts_model
@@ -234,6 +237,12 @@ def create_gradio_interface():
                 fn=update_custom_model,
                 inputs=model_select,
                 outputs=model_custom
+            )
+            
+            model_select.change(
+                fn=update_v2_ipa,
+                inputs=model_select,
+                outputs=lang_input
             )
             
             generate_btn.click(
@@ -539,5 +548,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
