@@ -5,7 +5,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"  # for MPS device compatibility
-sys.path.append(f"{os.path.dirname(os.path.abspath(__file__))}/../../third_party/BigVGAN/")
+sys.path.append(f"{os.path.dirname(os.path.abspath(__file__))}/../vocoder/BigVGAN/")
 
 import hashlib
 import re
@@ -625,4 +625,5 @@ def save_spectrogram(spectrogram, path):
     plt.colorbar()
     plt.savefig(path)
     plt.close()
+
 
