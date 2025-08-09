@@ -1,7 +1,6 @@
 from f5_tts.cleantext.thaig2p_modules import main 
 import re
 from pythainlp.util import expand_maiyamok
-import eng_to_ipa as ipa_en
 from phonemizer import phonemize
 from langdetect import detect
 
@@ -38,4 +37,5 @@ def any_ipa(text):
         ipa_text = ENG2IPA(text)
     else:
         ipa_text = ENG2IPA(text)
+
     return ipa_text
