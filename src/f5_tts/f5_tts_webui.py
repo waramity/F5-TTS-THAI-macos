@@ -141,7 +141,7 @@ def transcribe_text(input_audio="",translate=False,model="large-v3-turbo",comput
     return output_text
 
 def create_gradio_interface():
-    with gr.Blocks(title="F5-TTS ภาษาไทย",theme=gr.themes.Ocean()) as demo:
+    with gr.Blocks(title="F5-TTS ภาษาไทย 🇹🇭",theme=gr.themes.Ocean()) as demo:
         gr.Markdown("# F5-TTS ภาษาไทย")
         gr.Markdown("สร้างคำพูดจากข้อความ ด้วย Zero-shot TTS หรือ เสียงต้นฉบับ ภาษาไทย.")
 
@@ -154,7 +154,7 @@ def create_gradio_interface():
             )
             model_custom = gr.Textbox(label="ตำแหน่งโมเดลแบบกำหนดเอง",value="hf://VIZINTZOR/F5-TTS-THAI/model_650000.pt", visible=False, interactive=True)
             model_status = gr.Textbox(label="สถานะโมเดล", value="")
-            load_custom_btn = gr.Button("โหลด",variant="primary")
+            load_custom_btn = gr.Button("โหลด⭮",variant="primary")
     
         with gr.Tab(label="Text To Speech"):      
             with gr.Row():
@@ -162,9 +162,9 @@ def create_gradio_interface():
                     ref_text = gr.Textbox(label="ข้อความต้นฉบับ", lines=1, info="แนะนำให้ใช้เสียงที่มีความยาวไม่เกิน 5-10 วินาที")
                     ref_audio = gr.Audio(label="เสียงต้นฉบับ", type="filepath")
                     gen_text = gr.Textbox(label="ข้อความที่จะสร้าง", lines=4)
-                    generate_btn = gr.Button("สร้าง",variant="primary")
+                    generate_btn = gr.Button("🚀สร้าง",variant="primary")
 
-                    with gr.Accordion(label="ตั้งค่า"):
+                    with gr.Accordion(label="⚙️ตั้งค่า"):
                         lang_input = gr.Radio(label="การประมวลผลข้อความภาษา",choices=["Default","IPA"],value="Default",info="IPA สำหรับโมเดล V2 เท่านั้น")
                         remove_silence = gr.Checkbox(label="Remove Silence", value=True)
                         speed = gr.Slider(label="ความเร็ว", value=1, minimum=0.3, maximum=1.5, step=0.1)
@@ -253,7 +253,7 @@ def create_gradio_interface():
                 ],
                 outputs=[
                     output_audio,
-                    gr.Image(label="Spectrogram"),
+                    gr.Image(label="Spectrogram",visible=False),
                     ref_text,
                     seed_output
                 ]
@@ -365,7 +365,7 @@ def create_gradio_interface():
                     outputs=gen_text_input_multistyle,
                 )
 
-            with gr.Accordion("ตั้งค่า", open=False):
+            with gr.Accordion("⚙️ตั้งค่า", open=False):
                 remove_silence_multistyle = gr.Checkbox(
                     label="Remove Silences",
                     value=True,
@@ -376,7 +376,7 @@ def create_gradio_interface():
 
 
             # Generate button
-            generate_multistyle_btn = gr.Button("สร้าง", variant="primary")
+            generate_multistyle_btn = gr.Button("🚀สร้าง", variant="primary")
 
             # Output audio
             audio_output_multistyle = gr.Audio(label="เสียงที่สร้าง")
@@ -539,4 +539,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
