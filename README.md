@@ -1,99 +1,283 @@
-# F5-TTS: A Fairytaler that Fakes Fluent and Faithful Speech with Flow Matching. Support For Thai language.
+# F5-TTS: A Fairytaler that Fakes Fluent and Faithful Speech with Flow Matching
 
-[![python](https://img.shields.io/badge/Python-3.10-brightgreen)](https://github.com/SWivid/F5-TTS)
-[![arXiv](https://img.shields.io/badge/arXiv-2410.06885-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/2410.06885)
-[![lab](https://img.shields.io/badge/X--LANCE-Lab-grey?labelColor=lightgrey)](https://x-lance.sjtu.edu.cn/)
-[![lab](https://img.shields.io/badge/Peng%20Cheng-Lab-grey?labelColor=lightgrey)](https://www.pcl.ac.cn)
-<!-- <img src="https://github.com/user-attachments/assets/12d7749c-071a-427c-81bf-b87b91def670" alt="Watermark" style="width: 40px; height: auto"> -->
+## Support For Thai Language (macOS Version)
 
 Text-to-Speech (TTS) ภาษาไทย — เครื่องมือสร้างเสียงพูดจากข้อความด้วยเทคนิค Flow Matching ด้วยโมเดล F5-TTS
 
-โมเดล Finetune : [VIZINTZOR/F5-TTS-THAI](https://huggingface.co/VIZINTZOR/F5-TTS-THAI) 
+**โมเดล Finetune**: VIZINTZOR/F5-TTS-THAI  
+**โมเดล Finetune V2 (IPA)**: VIZINTZOR/F5-TTS-TH-V2
 
-โมเดล Finetune V2 (IPA) : [VIZINTZOR/F5-TTS-TH-V2](https://huggingface.co/VIZINTZOR/F5-TTS-TH-V2)
+⚠️ **หมายเหตุ**: การอ่านข้อความยาวๆ หรือบางคำ ยังไม่ถูกต้อง
 
- - การอ่านข้อความยาวๆ หรือบางคำ ยังไม่ถูกต้อง
+---
 
-# การติดตั้ง
-ก่อนเริ่มใช้งาน ต้องติดตั้ง:
- - Python (แนะนำเวอร์ชัน 3.10 ขึ้นไป)
- - [CUDA](https://developer.nvidia.com/cuda-downloads) แนะนำ CUDA version 11.8
- - [eSpeak NG](https://github.com/espeak-ng/espeak-ng)
-```sh
+## ความต้องการของระบบ
+
+- **macOS**: 12.3 ขึ้นไป (สำหรับ MPS support)
+- **Python**: 3.10 ขึ้นไป
+- **Apple Silicon (M1/M2/M3)**: แนะนำสำหรับประสิทธิภาพที่ดีที่สุด
+- **eSpeak NG**: สำหรับการประมวลผลเสียง
+
+---
+
+## การติดตั้ง
+
+### 1. ติดตั้ง Homebrew (ถ้ายังไม่มี)
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### 2. ติดตั้ง Python และ eSpeak NG
+```bash
+brew install python@3.10 espeak-ng
+```
+
+### 3. ติดตั้ง F5-TTS-THAI
+```bash
+# Clone repository
 git clone https://github.com/VYNCX/F5-TTS-THAI.git
 cd F5-TTS-THAI
-python -m venv venv
-call venv/scripts/activate
+
+# สร้าง virtual environment
+python3 -m venv venv
+
+# เปิดใช้งาน virtual environment
+source venv/bin/activate
+
+# อัพเกรด pip
+pip install --upgrade pip
+
+# ติดตั้ง F5-TTS-THAI
 pip install git+https://github.com/VYNCX/F5-TTS-THAI.git
 
-#จำเป็นต้องติดตั้งเพื่อใช้งานได้มีประสิทธิภาพกับ GPU
-pip install torch==2.3.0+cu118 torchaudio==2.3.0+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
-```
-หรือ รันไฟล์ `install.bat` เพื่อติดตั้ง
-
-# การใช้งาน
-สามารถรันไฟล์ `app-webui.bat` เพื่อใช้งานได้ 
-```sh
-  python src/f5_tts/f5_tts_webui.py
-```
-หรือ 
-
-```sh
-  f5-tts_webui
-```
-ใช้งานบน [Google Colab](https://colab.research.google.com/drive/10yb4-mGbSoyyfMyDX1xVF6uLqfeoCNxV?usp=sharing)
-
-คำแนะนำ :
-- สามารถตั้งค่า "ตัวอักษรสูงสุดต่อส่วน" หรือ max_chars เพื่อลดความผิดพลาดการอ่าน แต่ความเร็วในการสร้างจะช้าลง สามารถปรับลด NFE Step เพื่อเพิ่มความเร็วได้.
-- อย่าลืมเว้นวรรคประโยคเพื่อให้สามารถแบ่งส่วนในการสร้างได้.
-- สำหรับ ref_text หรือ ข้อความตันฉบับ แนะนำให้ใช้เป็นภาษาไทยหรือคำอ่านภาษาไทยสำหรับเสียงภาษาอื่น เพื่อให้การอ่านภาษาไทยดีขึ้น เช่น Good Morning > กู้ดมอร์นิ่ง.
-- สำหรับเสียงต้นแบบ ควรใช้ความยาวไม่เกิน 8 วินาที ถ้าเป็นไปได้ห้ามมีเสียงรบกวน.
-- สามารถปรับลดความเร็ว เพื่อให้การอ่านคำดีขึ้นได้ เช่น ความเร็ว 0.8-0.9 เพื่อลดการอ่านผิดหรือคำขาดหาย แต่ลดมากไปอาจมีเสียงต้นฉบับแทรกเข้ามา.
-  
-  <details><summary>ตัวอย่าง WebUI</summary>
-  
-   - Text To Speech
-   ![Example_Gradio#3](https://github.com/user-attachments/assets/9fd6bf42-3c34-41aa-8f88-3f7ea191e4f0)
-  
-   - Multi Speech
-   ![Example_Gradio#4](https://github.com/user-attachments/assets/fc57b2d0-bef9-4454-94c3-b72ca2551265)
- 
-  
-# ฝึกอบรม และ Finetune
-ใช้งานบน Google Colab [Finetune](https://colab.research.google.com/drive/1jwzw4Jn1qF8-F0o3TND68hLHdIqqgYEe?usp=sharing) หรือ 
-
-ติดตั้ง
-
-```sh
-  cd F5-TTS-THAI
-  pip install -e .
+# ติดตั้ง PyTorch สำหรับ Apple Silicon (M1/M2/M3)
+pip install torch torchaudio
 ```
 
-เปิด Gradio
-```sh
-  f5-tts_finetune-gradio
+### 4. ตรวจสอบการติดตั้ง
+```bash
+# ตรวจสอบว่า MPS (Metal Performance Shaders) พร้อมใช้งาน
+python3 -c "import torch; print('MPS available:', torch.backends.mps.is_available())"
 ```
 
-# ตัวอย่างเสียง
+---
 
-- เสียงต้นฉบับ
-- ข้อความ : ได้รับข่าวคราวของเราที่จะหาที่มันเป็นไปที่จะจัดขึ้น.
-  
-https://github.com/user-attachments/assets/003c8a54-6f75-4456-907d-d28897e4c393
+## การใช้งาน
 
-- เสียงที่สร้าง 1(ข้อความเดียวกัน)
-- ข้อความ : ได้รับข่าวคราวของเราที่จะหาที่มันเป็นไปที่จะจัดขึ้น.
-   
-https://github.com/user-attachments/assets/926829f2-8d56-4f0f-8e2e-d73cfcecc511
+### เปิดใช้งาน Web UI
 
-- เสียงที่สร้าง 2(ข้อความใหม่)
-- ข้อความ : ฉันชอบฟังเพลงขณะขับรถ เพราะช่วยให้รู้สึกผ่อนคลาย
+```bash
+# ตรวจสอบว่าอยู่ใน virtual environment (ควรเห็น (venv) ที่หน้า terminal)
+# ถ้ายังไม่ได้เปิดใช้งาน ให้รัน: source venv/bin/activate
 
-https://github.com/user-attachments/assets/06d6e94b-5f83-4d69-99d1-ad19caa9792b
+# รัน Web UI
+f5-tts_webui
+```
 
-# อ้างอิง
+หรือ
 
-- [F5-TTS](https://github.com/SWivid/F5-TTS)
+```bash
+python src/f5_tts/f5_tts_webui.py
+```
+
+เปิดเบราว์เซอร์และไปที่: **http://127.0.0.1:7860**
+
+### การใช้งานประจำวัน
+
+ทุกครั้งที่ต้องการใช้งาน:
+
+```bash
+# 1. ไปยังโฟลเดอร์โปรเจค
+cd ~/path/to/F5-TTS-THAI
+
+# 2. เปิดใช้งาน virtual environment
+source venv/bin/activate
+
+# 3. รัน Web UI
+f5-tts_webui
+
+# 4. เมื่อใช้งานเสร็จ ปิด virtual environment
+deactivate
+```
+
+---
+
+## ใช้งานบน Google Colab
+
+[Google Colab Notebook](link-to-your-colab)
+
+---
+
+## คำแนะนำการใช้งานบน macOS
+
+### สำหรับ Apple Silicon (M1/M2/M3):
+- **NFE Steps**: ลดเป็น 16-24 เพื่อความเร็วที่ดีขึ้น
+- **max_chars**: เริ่มต้นที่ 200-300 สำหรับความสมดุล
+- **ตรวจสอบการใช้งาน GPU**: เปิด Activity Monitor → Window → GPU History
+
+### คำแนะนำทั่วไป:
+- สามารถตั้งค่า **"ตัวอักษรสูงสุดต่อส่วน"** หรือ `max_chars` เพื่อลดความผิดพลาดการอ่าน แต่ความเร็วในการสร้างจะช้าลง สามารถปรับลด NFE Step เพื่อเพิ่มความเร็วได้
+- **อย่าลืมเว้นวรรคประโยค** เพื่อให้สามารถแบ่งส่วนในการสร้างได้
+- สำหรับ `ref_text` หรือ ข้อความต้นฉบับ แนะนำให้ใช้เป็นภาษาไทยหรือคำอ่านภาษาไทยสำหรับเสียงภาษาอื่น เช่น Good Morning → กู้ดมอร์นิ่ง
+- สำหรับ**เสียงต้นแบบ** ควรใช้ความยาวไม่เกิน 8 วินาที ถ้าเป็นไปได้ห้ามมีเสียงรบกวน
+- สามารถปรับลดความเร็ว เพื่อให้การอ่านคำดีขึ้นได้ เช่น ความเร็ว 0.8-0.9 เพื่อลดการอ่านผิดหรือคำขาดหาย แต่ลดมากไปอาจมีเสียงต้นฉบับแทรกเข้ามา
+
+---
+
+## ตัวอย่าง WebUI
+
+### Text To Speech
+[Screenshot or demo]
+
+### Multi Speech
+[Screenshot or demo]
+
+---
+
+## ฝึกอบรม และ Finetune
+
+### ใช้งานบน Google Colab
+[Google Colab Finetune Notebook](link-to-your-colab)
+
+### ติดตั้งสำหรับ Finetune บน macOS
+
+```bash
+cd F5-TTS-THAI
+
+# ติดตั้งแบบ editable mode
+pip install -e .
+```
+
+### เปิด Gradio Interface
+
+```bash
+f5-tts_finetune-gradio
+```
+
+---
+
+## ตัวอย่างเสียง
+
+### เสียงต้นฉบับ
+**ข้อความ**: ได้รับข่าวคราวของเราที่จะหาที่มันเป็นไปที่จะจัดขึ้น
+
+[ref_gen_1.mov]
+
+### เสียงที่สร้าง 1 (ข้อความเดียวกัน)
+**ข้อความ**: ได้รับข่าวคราวของเราที่จะหาที่มันเป็นไปที่จะจัดขึ้น
+
+[tts_gen_1.mov]
+
+### เสียงที่สร้าง 2 (ข้อความใหม่)
+**ข้อความ**: ฉันชอบฟังเพลงขณะขับรถ เพราะช่วยให้รู้สึกผ่อนคลาย
+
+[tts_gen_2.mov]
+
+---
+
+## การแก้ปัญหา (Troubleshooting)
+
+### ถ้าไม่พบคำสั่ง `f5-tts_webui`
+```bash
+# ลองรันโดยตรงด้วย Python
+python src/f5_tts/f5_tts_webui.py
+```
+
+### ถ้า MPS ไม่พร้อมใช้งาน
+```bash
+# ตรวจสอบเวอร์ชัน macOS (ต้องการ macOS 12.3+)
+sw_vers
+
+# อัพเดท PyTorch
+pip install --upgrade torch torchaudio
+```
+
+### ถ้ามีปัญหาการ import module
+```bash
+# ติดตั้งใหม่ในโหมด editable
+pip install -e .
+```
+
+---
+
+## สคริปต์การติดตั้งอัตโนมัติ
+
+สร้างไฟล์ `install_macos.sh`:
+
+```bash
+#!/bin/bash
+
+echo "Installing F5-TTS-THAI for macOS..."
+
+# ติดตั้ง prerequisites
+echo "Installing prerequisites..."
+brew install python@3.10 espeak-ng
+
+# Clone repository
+echo "Cloning repository..."
+git clone https://github.com/VYNCX/F5-TTS-THAI.git
+cd F5-TTS-THAI
+
+# สร้างและเปิดใช้งาน venv
+echo "Creating virtual environment..."
+python3 -m venv venv
+source venv/bin/activate
+
+# ติดตั้ง packages
+echo "Installing packages..."
+pip install --upgrade pip
+pip install git+https://github.com/VYNCX/F5-TTS-THAI.git
+pip install torch torchaudio
+
+# ตรวจสอบการติดตั้ง
+echo "Verifying installation..."
+python3 -c "import torch; print('MPS available:', torch.backends.mps.is_available())"
+
+echo ""
+echo "✅ Installation complete!"
+echo "To start using F5-TTS-THAI:"
+echo "1. Run: source venv/bin/activate"
+echo "2. Run: f5-tts_webui"
+echo "3. Open browser: http://127.0.0.1:7860"
+```
+
+รันสคริปต์:
+```bash
+chmod +x install_macos.sh
+./install_macos.sh
+```
+
+---
+
+## ข้อมูลเพิ่มเติม
+
+### ความแตกต่างจาก Windows Version:
+- ใช้ **MPS (Metal Performance Shaders)** แทน CUDA
+- ไม่มีไฟล์ `.bat` - ใช้คำสั่ง shell script แทน
+- Activation: `source venv/bin/activate` แทน `call venv/scripts/activate`
+
+### ประสิทธิภาพที่คาดหวัง:
+- **Apple Silicon (M1/M2/M3)**: ประสิทธิภาพดีด้วย MPS acceleration
+- **Intel Mac**: ช้ากว่า เนื่องจากใช้ CPU เท่านั้น
+
+---
+
+## อ้างอิง
+
+- [F5-TTS Original Repository](https://github.com/SWivid/F5-TTS)
+- [Project Repository](https://github.com/VYNCX/F5-TTS-THAI)
+
+---
+
+## License
+
+[Your License Information]
+
+---
+
+## ติดต่อและสนับสนุน
+
+[Your Contact Information]
 
 
 
